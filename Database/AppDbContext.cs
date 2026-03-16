@@ -9,5 +9,10 @@ namespace Flight_Alert_API.Database;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User, IdentityRole<int>, int>(options)
 {
-    
+    public DbSet<Airport> Airports { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
 }
