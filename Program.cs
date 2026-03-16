@@ -37,8 +37,13 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMonitoredRouteService, MonitoredRouteService>();
+builder.Services.AddScoped<IMonitoredRouteRepository, MonitoredRouteRepository>();
+builder.Services.AddScoped<IAirportRepository, AirportRepository>();
 
 builder.Services.AddOpenApi();
 
