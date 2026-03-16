@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Flight_Alert_API.Models;
 
 public class Airport

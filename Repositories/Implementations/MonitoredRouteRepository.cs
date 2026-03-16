@@ -25,4 +25,31 @@ public class MonitoredRouteRepository(
         }
 
     }
+
+    public async Task<MonitoredRoute?> GetByIdAsync(int id)
+    {
+        try
+        {
+            return await _dbContext.MonitoredRoutes.FindAsync(id);
+        }
+        catch(Exception)
+        {
+            //log
+            throw; 
+        }
+    }
+
+    public async Task DeleteAsync(MonitoredRoute monitoredRoute)
+    {
+        try
+        {
+            _dbContext.MonitoredRoutes.Remove(monitoredRoute);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch(Exception)
+        {
+            //log
+            throw; 
+        }
+    }
 }

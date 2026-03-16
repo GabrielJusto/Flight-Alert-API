@@ -34,5 +34,17 @@ public class MonitoredRouteService(
 
         await _monitoredRouteRepository.Insert(monitoredRoute);
     }
+
+    public async Task DeleteMonitoredRouteAsync(int id)
+    {
+        MonitoredRoute? monitoredRoute = await _monitoredRouteRepository.GetByIdAsync(id);
+        
+        if (monitoredRoute == null)
+        {
+            throw new EntityNotFoundException("Monitored route not found.");
+        }
+
+        await _monitoredRouteRepository.DeleteAsync(monitoredRoute);
+    }
     
 }

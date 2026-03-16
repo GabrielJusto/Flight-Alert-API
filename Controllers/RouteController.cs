@@ -33,4 +33,22 @@ public class RouteController(
             return StatusCode(500, new { error = "An unexpected error occurred." });
         }
     }
+
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteRoute(int id)
+    {
+        try
+        {
+            await _monitoredRouteService.DeleteMonitoredRouteAsync(id);
+            return Ok();
+        }
+        catch (EntityNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "An unexpected error occurred." });
+        }
+    }
 }
