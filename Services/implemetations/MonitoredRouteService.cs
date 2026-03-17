@@ -27,7 +27,7 @@ public class MonitoredRouteService(
             throw new EntityNotFoundException("Invalid IATA code for origin or destination airport.");
         }
 
-        MonitoredRoute monitoredRoute = await GetMonitoredRoute(originAirport.Id, destinationAirport.Id);
+        MonitoredRoute monitoredRoute = await GetMonitoredRoute(originAirport.Id, destinationAirport.Id, request.DepartureDay, request.ReturnDay);
 
         UserMonitoredRoute userMonitoredRoute = new()
         {
@@ -50,15 +50,17 @@ public class MonitoredRouteService(
         await _monitoredRouteRepository.DeleteAsync(monitoredRoute);
     }
 
-    private async Task<MonitoredRoute> GetMonitoredRoute(int originAirportId, int destinationAirportId)
+    private async Task<MonitoredRoute> GetMonitoredRoute(int originAirportId, int destinationAirportId, DateOnly departureDay, DateOnly returnDay)
     {
-        MonitoredRoute? monitoredRoute = await _monitoredRouteRepository.GetByOriginAndDestinationAsync(originAirportId, destinationAirportId);
+        MonitoredRoute? monitoredRoute = await _monitoredRouteRepository.GetByOriginAndDestinationAsync(originAirportId, destinationAirportId, departureDay, returnDay);
         if(monitoredRoute is null)
         {
             monitoredRoute = new()
             {
                 OriginAirportId = originAirportId,
-                DestinationAirportId = destinationAirportId
+                DestinationAirportId = destinationAirportId,
+                DepartureDay = departureDay,
+                ReturnDay = returnDay
             };
             await _monitoredRouteRepository.Insert(monitoredRoute);
         }

@@ -54,11 +54,12 @@ public class MonitoredRouteRepository(
         }
     }
 
-    public async Task<MonitoredRoute?> GetByOriginAndDestinationAsync(int originAirportId, int destinationAirportId)
+    public async Task<MonitoredRoute?> GetByOriginAndDestinationAsync(int originAirportId, int destinationAirportId, DateOnly departureDay, DateOnly returnDay)
     {
         try
         {
-            return await _dbContext.MonitoredRoutes.FirstOrDefaultAsync(mr => mr.OriginAirportId == originAirportId && mr.DestinationAirportId == destinationAirportId);
+            return await _dbContext.MonitoredRoutes
+                .FirstOrDefaultAsync(mr => mr.OriginAirportId == originAirportId && mr.DestinationAirportId == destinationAirportId && mr.DepartureDay == departureDay && mr.ReturnDay == returnDay);
         }
         catch(Exception)
         {
