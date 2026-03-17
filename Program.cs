@@ -6,6 +6,9 @@ using Flight_Alert_API.Repositories.Interfaces;
 using Flight_Alert_API.Services.implemetations;
 using Flight_Alert_API.Services.Interfaces;
 
+using Hangfire;
+using Hangfire.PostgreSql;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,16 +41,34 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     .AddDefaultTokenProviders();
 
 
+// Adicionar Hangfire
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(options =>
+        options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+builder.Services.AddHangfireServer();
+
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMonitoredRouteService, MonitoredRouteService>();
 builder.Services.AddScoped<IMonitoredRouteRepository, MonitoredRouteRepository>();
 builder.Services.AddScoped<IAirportRepository, AirportRepository>();
+builder.Services.AddScoped<IFlightPriceService, FlightPriceService>();
 
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseHangfireDashboard("/hangfire");
+}
 
 if(app.Environment.IsDevelopment())
 {
@@ -55,4 +76,9 @@ if(app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+RecurringJob.AddOrUpdate<IFlightPriceService>(
+    "check-flight-prices",
+    service => service.CheckAllFlightPricesAsync(),
+    Cron.Minutely()); 
 app.Run();
