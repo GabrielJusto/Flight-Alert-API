@@ -61,6 +61,7 @@ builder.Services.AddScoped<IMonitoredRouteRepository, MonitoredRouteRepository>(
 builder.Services.AddScoped<IAirportRepository, AirportRepository>();
 builder.Services.AddScoped<IFlightPriceService, FlightPriceService>();
 builder.Services.AddScoped<IWhatsappService, TwilioService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddOpenApi();
 

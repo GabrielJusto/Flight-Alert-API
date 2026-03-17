@@ -10,4 +10,7 @@ public class UserRegisterRequestDto
 
     [JsonPropertyName("password")]
     public string Password { get; set; } = string.Empty;
+
+    [JsonPropertyName("phoneNumber")]
+    public string PhoneNumber { get; set; } = string.Empty;
 }

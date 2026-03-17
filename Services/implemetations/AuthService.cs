@@ -27,7 +27,8 @@ public class AuthService(
         User user = new()
         {
             Email = data.Email,
-            UserName = data.Email
+            UserName = data.Email,
+            PhoneNumber = data.PhoneNumber
         };
         IdentityResult result = await _userManager.CreateAsync(user, data.Password);
 
