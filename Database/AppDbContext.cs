@@ -11,6 +11,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 {
     public DbSet<Airport> Airports { get; set; }
     public DbSet<MonitoredRoute> MonitoredRoutes { get; set; }
+    public DbSet<UserMonitoredRoute> UserMonitoredRoutes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,5 +28,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .WithMany()
             .HasForeignKey(m => m.DestinationAirportId)
             .HasPrincipalKey(a => a.Id);
+        
+        modelBuilder.Entity<UserMonitoredRoute>()
+            .HasOne(umr => umr.User)
+            .WithMany()
+            .HasForeignKey(umr => umr.UserId)
+            .HasPrincipalKey(u => u.Id);
+
+        modelBuilder.Entity<UserMonitoredRoute>()
+            .HasOne(umr => umr.MonitoredRoute)
+            .WithMany()
+            .HasForeignKey(umr => umr.MonitoredRouteId)
+            .HasPrincipalKey(mr => mr.Id);
     }
 }

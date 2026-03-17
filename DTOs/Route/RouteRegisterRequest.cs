@@ -5,4 +5,5 @@ public class RouteRegisterRequest
     public string OriginIataCode { get; set; } = null!;
     public string DestinationIataCode { get; set; } = null!;
     public decimal TargetPrice { get; set; }
+    public int UserId { get; set; }
 }

@@ -3,6 +3,7 @@ using Flight_Alert_API.Database;
 using Flight_Alert_API.Models;
 using Flight_Alert_API.Repositories.Implementations;
 using Flight_Alert_API.Repositories.Interfaces;
+using Flight_Alert_API.Services;
 using Flight_Alert_API.Services.implemetations;
 using Flight_Alert_API.Services.Interfaces;
 
@@ -62,6 +63,8 @@ builder.Services.AddScoped<IAirportRepository, AirportRepository>();
 builder.Services.AddScoped<IFlightPriceService, FlightPriceService>();
 builder.Services.AddScoped<IWhatsappService, TwilioService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserMonitoredRouteRepository, UserMonitoredRouteRepository>();
+builder.Services.AddScoped<IMonitoredRouteService , MonitoredRouteService>();
 
 builder.Services.AddOpenApi();
 
