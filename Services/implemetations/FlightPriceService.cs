@@ -3,10 +3,15 @@ using Flight_Alert_API.Services.Interfaces;
 
 namespace Flight_Alert_API.Services.implemetations;
 
-public class FlightPriceService: IFlightPriceService
+public class FlightPriceService(
+    IWhatsappService whatsappService
+) : IFlightPriceService
 {
-    public Task CheckAllFlightPricesAsync()
+    private readonly IWhatsappService _whatsappService = whatsappService;
+
+
+    public async Task CheckAllFlightPricesAsync()
     {
-        throw new NotImplementedException();
+        await _whatsappService.SendMessage();
     }
 }

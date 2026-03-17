@@ -14,7 +14,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<TwilioConfiguration>(builder.Configuration.GetSection("Twilio"));
 
 builder.Services.AddControllers();
 // Configurar DbContext com PostgreSQL
@@ -58,6 +60,7 @@ builder.Services.AddScoped<IMonitoredRouteService, MonitoredRouteService>();
 builder.Services.AddScoped<IMonitoredRouteRepository, MonitoredRouteRepository>();
 builder.Services.AddScoped<IAirportRepository, AirportRepository>();
 builder.Services.AddScoped<IFlightPriceService, FlightPriceService>();
+builder.Services.AddScoped<IWhatsappService, TwilioService>();
 
 builder.Services.AddOpenApi();
 
