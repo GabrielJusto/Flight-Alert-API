@@ -3,7 +3,6 @@ using Flight_Alert_API.Database;
 using Flight_Alert_API.Models;
 using Flight_Alert_API.Repositories.Implementations;
 using Flight_Alert_API.Repositories.Interfaces;
-using Flight_Alert_API.Services;
 using Flight_Alert_API.Services.implemetations;
 using Flight_Alert_API.Services.Interfaces;
 
@@ -65,6 +64,7 @@ builder.Services.AddScoped<IWhatsappService, TwilioService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserMonitoredRouteRepository, UserMonitoredRouteRepository>();
 builder.Services.AddScoped<IMonitoredRouteService , MonitoredRouteService>();
+builder.Services.AddScoped<ISendAlertsService, SendAlertsService>();
 
 builder.Services.AddOpenApi();
 
@@ -84,8 +84,13 @@ if(app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-RecurringJob.AddOrUpdate<IFlightPriceService>(
-    "check-flight-prices",
-    service => service.CheckAllFlightPricesAsync(),
+// RecurringJob.AddOrUpdate<IFlightPriceService>(
+//     "check-flight-prices",
+//     service => service.CheckAllFlightPricesAsync(),
+//     Cron.Minutely()); 
+
+RecurringJob.AddOrUpdate<ISendAlertsService>(
+    "send-alerts",
+    service => service.SendAlertsAsync(),
     Cron.Minutely()); 
 app.Run();
