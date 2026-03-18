@@ -11,11 +11,12 @@ namespace Flight_Alert_API.Controllers;
 [ApiController]
 [Route("/routes")]
 public class RouteController(
-    IMonitoredRouteService monitoredRouteService
+    IMonitoredRouteService monitoredRouteService,
+    ILogger<RouteController> logger
 ) : ControllerBase
 {
     private readonly IMonitoredRouteService _monitoredRouteService = monitoredRouteService;
-
+    private readonly ILogger<RouteController> _logger = logger;
 
     [HttpPost("insert")]
     public async Task<IActionResult> InsertRoute([FromBody] RouteRegisterRequest request)
@@ -58,11 +59,13 @@ public class RouteController(
     {
         try
         {
+            _logger.LogInformation("Getting all monitored routes for user {UserId}", userId);
             List<MonitoredRouteDetail> routes = await _monitoredRouteService.GetUserMonitoredRoutesAsync(userId);
             return Ok(routes);
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            _logger.LogError(ex, "An unexpected error occurred while getting all routes for user {UserId}", userId);
             return StatusCode(500, new { error = "An unexpected error occurred." });
         }
     }
