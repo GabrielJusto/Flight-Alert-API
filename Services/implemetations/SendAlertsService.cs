@@ -6,23 +6,26 @@ namespace Flight_Alert_API.Services.implemetations;
 
 public class SendAlertsService(
     IWhatsappService whatsappService,
-    IUserMonitoredRouteRepository userMonitoredRouteRepository
+    IFlightNotificationRepository flightNotificationRepository
 ) : ISendAlertsService
 {
 
     private readonly IWhatsappService _whatsappService = whatsappService;
-    private readonly IUserMonitoredRouteRepository _userMonitoredRouteRepository = userMonitoredRouteRepository;
+    private readonly IFlightNotificationRepository _flightNotificationRepository = flightNotificationRepository;
 
     public async Task SendAlertsAsync()
     {
-        List<UserMonitoredRoute> userMonitoredRoutes = await _userMonitoredRouteRepository.GetAllForSendingAlertsAsync();
+        
+        List<FlightNotification> notifications = await _flightNotificationRepository.GetAllAsync();
 
-        foreach (var userMonitoredRoute in userMonitoredRoutes)
+        foreach (var notification in notifications)
         {
-            string message = $"Alert for {userMonitoredRoute.User.Email}: Price drop detected for route {userMonitoredRoute.MonitoredRoute.OriginAirport.Name} to {userMonitoredRoute.MonitoredRoute.DestinationAirport.Name}!";
-
-            Console.WriteLine(message);
-            // await _whatsappService.SendMessage();
+            await _whatsappService.SendMessage(notification);
         }
+
+        await _flightNotificationRepository.DeleteAllAsync();
+
+        
+        
     }
 }

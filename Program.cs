@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<TwilioConfiguration>(builder.Configuration.GetSection("Twilio"));
+builder.Services.Configure<SerpApiConfiguration>(builder.Configuration.GetSection("SerpApi"));
 
 builder.Services.AddControllers();
 // Configurar DbContext com PostgreSQL
@@ -65,6 +66,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserMonitoredRouteRepository, UserMonitoredRouteRepository>();
 builder.Services.AddScoped<IMonitoredRouteService , MonitoredRouteService>();
 builder.Services.AddScoped<ISendAlertsService, SendAlertsService>();
+builder.Services.AddScoped<ISerpGoogleFlightsService, SerpGoogleFlightsService>();
+builder.Services.AddScoped<IFlightNotificationRepository, FlightNotificationRepository>();
 
 builder.Services.AddOpenApi();
 
@@ -84,13 +87,13 @@ if(app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-// RecurringJob.AddOrUpdate<IFlightPriceService>(
-//     "check-flight-prices",
-//     service => service.CheckAllFlightPricesAsync(),
-//     Cron.Minutely()); 
+RecurringJob.AddOrUpdate<IFlightPriceService>(
+    "check-flight-prices",
+    service => service.CheckAllFlightPricesAsync(),
+    Cron.Daily(7)); 
 
 RecurringJob.AddOrUpdate<ISendAlertsService>(
     "send-alerts",
     service => service.SendAlertsAsync(),
-    Cron.Minutely()); 
+    Cron.Daily(7, 30));
 app.Run();
