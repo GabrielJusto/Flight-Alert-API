@@ -28,5 +28,18 @@ public class UserMonitoredRouteRepository(
             .ThenInclude(mr => mr.DestinationAirport)
             .ToListAsync();
     }
+
+    public async Task<List<UserMonitoredRoute>> GetAllByUserIdAsync(int userId)
+    {
+        return await _context.UserMonitoredRoutes
+            .Where(umr => umr.UserId == userId)
+            .Include(umr => umr.MonitoredRoute)
+            .ThenInclude(mr => mr.OriginAirport)
+            .Include(umr => umr.MonitoredRoute)
+            .ThenInclude(mr => mr.DestinationAirport)
+            .Include(umr => umr.MonitoredRoute)
+            .ThenInclude(mr => mr.FlightNotifications)
+            .ToListAsync();
+    }
     
 }

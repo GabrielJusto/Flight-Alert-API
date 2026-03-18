@@ -6,4 +6,5 @@ public class FlightNotification
     public int MonitoredRouteId { get; set; }
     public decimal Price { get; set; }
     public virtual MonitoredRoute MonitoredRoute { get; set; } = null!;
+    public DateTime NotificationDate { get; set; }
 }

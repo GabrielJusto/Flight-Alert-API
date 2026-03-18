@@ -50,6 +50,20 @@ public class MonitoredRouteService(
         await _monitoredRouteRepository.DeleteAsync(monitoredRoute);
     }
 
+    public async Task<List<MonitoredRouteDetail>> GetUserMonitoredRoutesAsync(int userId)
+    {
+        List<UserMonitoredRoute> userMonitoredRoutes = await _userMonitoredRouteRepository.GetAllByUserIdAsync(userId);
+
+        return userMonitoredRoutes.Select(umr => new MonitoredRouteDetail
+        {
+            OriginIataCode = umr.MonitoredRoute.OriginAirport.IataCode,
+            DestinationIataCode = umr.MonitoredRoute.DestinationAirport.IataCode,
+            DepartureDay = umr.MonitoredRoute.DepartureDay,
+            Price = umr.MonitoredRoute.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0
+        }).ToList();
+    }
+    
+
     private async Task<MonitoredRoute> GetMonitoredRoute(int originAirportId, int destinationAirportId, DateOnly departureDay, DateOnly returnDay)
     {
         MonitoredRoute? monitoredRoute = await _monitoredRouteRepository.GetByOriginAndDestinationAsync(originAirportId, destinationAirportId, departureDay, returnDay);

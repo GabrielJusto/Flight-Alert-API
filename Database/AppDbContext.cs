@@ -44,7 +44,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
         modelBuilder.Entity<FlightNotification>()
             .HasOne(fn => fn.MonitoredRoute)
-            .WithMany()
+            .WithMany(mr => mr.FlightNotifications)
             .HasForeignKey(fn => fn.MonitoredRouteId)
             .HasPrincipalKey(mr => mr.Id);
     }

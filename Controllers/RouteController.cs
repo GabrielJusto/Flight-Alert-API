@@ -51,4 +51,18 @@ public class RouteController(
             return StatusCode(500, new { error = "An unexpected error occurred." });
         }
     }
+
+    [HttpGet("get-all/{userId}")]
+    public async Task<IActionResult> GetAllRoutes(int userId)
+    {
+        try
+        {
+            List<MonitoredRouteDetail> routes = await _monitoredRouteService.GetUserMonitoredRoutesAsync(userId);
+            return Ok(routes);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "An unexpected error occurred." });
+        }
+    }
 }

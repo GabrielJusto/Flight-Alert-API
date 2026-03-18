@@ -6,4 +6,5 @@ public interface IMonitoredRouteService
 {
     public Task InsertMonitoredRouteAsync(RouteRegisterRequest request);
     public Task DeleteMonitoredRouteAsync(int id);
+    public Task<List<MonitoredRouteDetail>> GetUserMonitoredRoutesAsync(int userId);
 }

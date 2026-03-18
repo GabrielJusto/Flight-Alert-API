@@ -7,4 +7,5 @@ public interface IUserMonitoredRouteRepository
 {
     public Task Insert(UserMonitoredRoute userMonitoredRoute);
     public Task<List<UserMonitoredRoute>> GetAllForSendingAlertsAsync();
+    public Task<List<UserMonitoredRoute>> GetAllByUserIdAsync(int userId);
 }
