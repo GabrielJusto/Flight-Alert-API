@@ -24,7 +24,7 @@ public class SerpGoogleFlightsService : ISerpGoogleFlightsService
     public List<FlightSearchResult> GetFlights(SerpGoogleFlightsRequest request)
     {
         var results = new List<FlightSearchResult>();
-        Hashtable ht = new ();
+        Hashtable ht = new();
         ht.Add("engine", request.Engine);
         ht.Add("departure_id", request.DepartureId);
         ht.Add("arrival_id", request.ArrivalId);
@@ -34,14 +34,14 @@ public class SerpGoogleFlightsService : ISerpGoogleFlightsService
 
         try
         {
-            GoogleSearch search = new (ht, _apiKey);
+            GoogleSearch search = new(ht, _apiKey);
             string jsonString = search.GetJson().ToString();
-            
+
             SerpGoogleFlightsResponse? response = JsonConvert.DeserializeObject<SerpGoogleFlightsResponse>(jsonString);
 
-            if (response?.BestFlights != null)
+            if(response?.BestFlights != null)
             {
-                foreach (var flightOption in response.BestFlights)
+                foreach(var flightOption in response.BestFlights)
                 {
                     var flightResult = new FlightSearchResult
                     {
@@ -51,9 +51,9 @@ public class SerpGoogleFlightsService : ISerpGoogleFlightsService
                         Type = flightOption.Type
                     };
 
-                    foreach (var segment in flightOption.Flights)
+                    foreach(var segment in flightOption.Flights)
                     {
-                        FlightSegmentInfo segmentInfo = new ()
+                        FlightSegmentInfo segmentInfo = new()
                         {
                             Airline = segment.Airline,
                             FlightNumber = segment.FlightNumber,
@@ -74,9 +74,9 @@ public class SerpGoogleFlightsService : ISerpGoogleFlightsService
                     }
 
 
-                    if (flightOption.Layovers != null)
+                    if(flightOption.Layovers != null)
                     {
-                        foreach (var layover in flightOption.Layovers)
+                        foreach(var layover in flightOption.Layovers)
                         {
                             var layoverInfo = new LayoverInfo
                             {
@@ -93,7 +93,7 @@ public class SerpGoogleFlightsService : ISerpGoogleFlightsService
                 }
             }
         }
-        catch(SerpApiSearchException )
+        catch(SerpApiSearchException)
         {
             throw;
         }

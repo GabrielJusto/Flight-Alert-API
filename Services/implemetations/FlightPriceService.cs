@@ -20,33 +20,33 @@ public class FlightPriceService(
     {
         List<MonitoredRoute> monitoredRoutes = await _monitoredRouteRepository.GetAllAsync();
 
-        foreach (var route in monitoredRoutes)
+        foreach(var route in monitoredRoutes)
         {
-            SerpGoogleFlightsRequest request = new ()
+            SerpGoogleFlightsRequest request = new()
             {
                 DepartureId = route.OriginAirport.IataCode,
                 ArrivalId = route.DestinationAirport.IataCode,
                 OutboundDate = route.DepartureDay.ToString("yyyy-MM-dd"),
                 Currency = "BRL"
             };
-            
+
             List<FlightSearchResult> flightResults = _serpGoogleFlightsService.GetFlights(request);
-            
+
             FlightSearchResult? cheapestFlight = flightResults
                 .Where(result => result.Price is not null && result.Price > 0)
                 .MinBy(result => result.Price);
-            
-            if (cheapestFlight != null)
+
+            if(cheapestFlight != null)
             {
                 FlightNotification notification = new()
                 {
                     MonitoredRouteId = route.Id,
                     Price = cheapestFlight.Price ?? 0,
                 };
-                
+
                 await _flightNotificationRepository.AddAllFlightNotificationsAsync(new List<FlightNotification> { notification });
             }
-            
+
         }
     }
 }

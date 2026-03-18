@@ -12,11 +12,11 @@ namespace Flight_Alert_API.Controllers;
 [Route("/routes")]
 public class RouteController(
     IMonitoredRouteService monitoredRouteService
-): ControllerBase
+) : ControllerBase
 {
     private readonly IMonitoredRouteService _monitoredRouteService = monitoredRouteService;
-    
-    
+
+
     [HttpPost("insert")]
     public async Task<IActionResult> InsertRoute([FromBody] RouteRegisterRequest request)
     {
@@ -24,7 +24,8 @@ public class RouteController(
         {
             await _monitoredRouteService.InsertMonitoredRouteAsync(request);
             return Ok();
-        }catch(EntityNotFoundException ex)
+        }
+        catch(EntityNotFoundException ex)
         {
             return NotFound(new { error = ex.Message });
         }
@@ -42,11 +43,11 @@ public class RouteController(
             await _monitoredRouteService.DeleteMonitoredRouteAsync(id);
             return Ok();
         }
-        catch (EntityNotFoundException ex)
+        catch(EntityNotFoundException ex)
         {
             return NotFound(new { error = ex.Message });
         }
-        catch (Exception)
+        catch(Exception)
         {
             return StatusCode(500, new { error = "An unexpected error occurred." });
         }
@@ -60,7 +61,7 @@ public class RouteController(
             List<MonitoredRouteDetail> routes = await _monitoredRouteService.GetUserMonitoredRoutesAsync(userId);
             return Ok(routes);
         }
-        catch (Exception)
+        catch(Exception)
         {
             return StatusCode(500, new { error = "An unexpected error occurred." });
         }

@@ -11,7 +11,7 @@ public class AirportRepository(
     AppDbContext context
 ) : IAirportRepository
 {
-    
+
     private readonly AppDbContext _context_ = context;
     public async Task<Airport?> GetByIATACodeAsync(string iataCode)
     {

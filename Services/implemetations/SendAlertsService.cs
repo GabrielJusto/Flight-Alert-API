@@ -15,17 +15,17 @@ public class SendAlertsService(
 
     public async Task SendAlertsAsync()
     {
-        
+
         List<FlightNotification> notifications = await _flightNotificationRepository.GetAllAsync();
 
-        foreach (var notification in notifications)
+        foreach(var notification in notifications)
         {
             await _whatsappService.SendMessage(notification);
         }
 
         await _flightNotificationRepository.DeleteAllAsync();
 
-        
-        
+
+
     }
 }

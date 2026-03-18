@@ -11,12 +11,12 @@ public class UserService(
     IUserRepository userRepository
 ) : IUserService
 {
-    
+
     private readonly IUserRepository _userRepository = userRepository;
     public async Task UpdateUserAsync(UserUpdateDto data)
     {
         User? user = await _userRepository.GetByIdAsync(data.Id);
-        if (user == null)
+        if(user == null)
         {
             throw new EntityNotFoundException("User not found");
         }

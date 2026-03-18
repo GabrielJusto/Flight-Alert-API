@@ -23,13 +23,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .WithMany()
             .HasForeignKey(m => m.OriginAirportId)
             .HasPrincipalKey(a => a.Id);
-            
+
         modelBuilder.Entity<MonitoredRoute>()
             .HasOne(m => m.DestinationAirport)
             .WithMany()
             .HasForeignKey(m => m.DestinationAirportId)
             .HasPrincipalKey(a => a.Id);
-        
+
         modelBuilder.Entity<UserMonitoredRoute>()
             .HasOne(umr => umr.User)
             .WithMany()

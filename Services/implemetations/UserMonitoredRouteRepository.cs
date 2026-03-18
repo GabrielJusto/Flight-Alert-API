@@ -41,5 +41,5 @@ public class UserMonitoredRouteRepository(
             .ThenInclude(mr => mr.FlightNotifications)
             .ToListAsync();
     }
-    
+
 }

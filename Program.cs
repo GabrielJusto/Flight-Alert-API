@@ -64,7 +64,7 @@ builder.Services.AddScoped<IFlightPriceService, FlightPriceService>();
 builder.Services.AddScoped<IWhatsappService, TwilioService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserMonitoredRouteRepository, UserMonitoredRouteRepository>();
-builder.Services.AddScoped<IMonitoredRouteService , MonitoredRouteService>();
+builder.Services.AddScoped<IMonitoredRouteService, MonitoredRouteService>();
 builder.Services.AddScoped<ISendAlertsService, SendAlertsService>();
 builder.Services.AddScoped<ISerpGoogleFlightsService, SerpGoogleFlightsService>();
 builder.Services.AddScoped<IFlightNotificationRepository, FlightNotificationRepository>();
@@ -74,7 +74,7 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
+if(app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseHangfireDashboard("/hangfire");
@@ -90,7 +90,7 @@ app.MapControllers();
 RecurringJob.AddOrUpdate<IFlightPriceService>(
     "check-flight-prices",
     service => service.CheckAllFlightPricesAsync(),
-    Cron.Daily(7)); 
+    Cron.Daily(7));
 
 RecurringJob.AddOrUpdate<ISendAlertsService>(
     "send-alerts",

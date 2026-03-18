@@ -19,7 +19,8 @@ public class FlightNotificationRepository(
             _context.FlightNotifications.AddRange(notifications);
             await _context.SaveChangesAsync();
 
-        }catch (Exception)
+        }
+        catch(Exception)
         {
             //log
             throw;
@@ -37,7 +38,7 @@ public class FlightNotificationRepository(
                 .ThenInclude(mr => mr.DestinationAirport)
             .ToListAsync();
         }
-        catch (Exception)
+        catch(Exception)
         {
             //log
             throw;
@@ -51,7 +52,7 @@ public class FlightNotificationRepository(
             _context.FlightNotifications.RemoveRange(_context.FlightNotifications);
             await _context.SaveChangesAsync();
         }
-        catch (Exception)
+        catch(Exception)
         {
             //log
             throw;

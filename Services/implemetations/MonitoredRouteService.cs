@@ -62,7 +62,7 @@ public class MonitoredRouteService(
             Price = umr.MonitoredRoute.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0
         }).ToList();
     }
-    
+
 
     private async Task<MonitoredRoute> GetMonitoredRoute(int originAirportId, int destinationAirportId, DateOnly departureDay, DateOnly returnDay)
     {
