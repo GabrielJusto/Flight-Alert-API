@@ -8,13 +8,22 @@ using Microsoft.EntityFrameworkCore;
 namespace Flight_Alert_API.Repositories.Implementations;
 
 public class AirportRepository(
-    AppDbContext context
+    AppDbContext context,
+    ILogger<AirportRepository> logger
 ) : IAirportRepository
 {
 
     private readonly AppDbContext _context_ = context;
+    private readonly ILogger<AirportRepository> _logger = logger;
     public async Task<Airport?> GetByIATACodeAsync(string iataCode)
     {
-        return await _context_.Airports.FirstOrDefaultAsync(a => a.IataCode == iataCode);
+        try
+        {
+            return await _context_.Airports.FirstOrDefaultAsync(a => a.IataCode == iataCode);
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while fetching airport with IATA code {IataCode}", iataCode);
+            throw;
+        }
     }
 }

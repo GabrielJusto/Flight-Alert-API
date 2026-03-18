@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Flight_Alert_API.Repositories.Implementations;
 
 public class FlightNotificationRepository(
-    AppDbContext context
+    AppDbContext context,
+    ILogger<FlightNotificationRepository> logger
 ) : IFlightNotificationRepository
 {
     private readonly AppDbContext _context = context;
+    private readonly ILogger<FlightNotificationRepository> _logger = logger;
     public async Task AddAllFlightNotificationsAsync(List<FlightNotification> notifications)
     {
         try
@@ -20,9 +22,9 @@ public class FlightNotificationRepository(
             await _context.SaveChangesAsync();
 
         }
-        catch(Exception)
+        catch(Exception ex)
         {
-            //log
+            _logger.LogError(ex, "An error occurred while adding FlightNotifications");
             throw;
         }
     }
@@ -40,7 +42,7 @@ public class FlightNotificationRepository(
         }
         catch(Exception)
         {
-            //log
+            _logger.LogError("An error occurred while fetching all FlightNotifications");
             throw;
         }
     }
@@ -52,9 +54,9 @@ public class FlightNotificationRepository(
             _context.FlightNotifications.RemoveRange(_context.FlightNotifications);
             await _context.SaveChangesAsync();
         }
-        catch(Exception)
+        catch(Exception ex)
         {
-            //log
+            _logger.LogError(ex, "An error occurred while deleting all FlightNotifications");
             throw;
         }
     }
