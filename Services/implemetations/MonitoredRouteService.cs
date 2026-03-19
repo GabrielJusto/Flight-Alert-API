@@ -59,7 +59,7 @@ public class MonitoredRouteService(
             OriginIataCode = umr.MonitoredRoute.OriginAirport.IataCode,
             DestinationIataCode = umr.MonitoredRoute.DestinationAirport.IataCode,
             DepartureDay = umr.MonitoredRoute.DepartureDay,
-            Price = umr.MonitoredRoute.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0
+            Price = umr.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0
         }).ToList();
     }
 

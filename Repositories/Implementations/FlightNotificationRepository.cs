@@ -34,10 +34,14 @@ public class FlightNotificationRepository(
         try
         {
             return await _context.FlightNotifications
-            .Include(fn => fn.MonitoredRoute)
-                .ThenInclude(mr => mr.OriginAirport)
-            .Include(fn => fn.MonitoredRoute)
-                .ThenInclude(mr => mr.DestinationAirport)
+            .Include(fn => fn.UserMonitoredRoute)
+                .ThenInclude(umr => umr.MonitoredRoute)
+                    .ThenInclude(mr => mr.OriginAirport)
+            .Include(fn => fn.UserMonitoredRoute)
+                .ThenInclude(umr => umr.MonitoredRoute)
+                    .ThenInclude(mr => mr.DestinationAirport)
+            .Include(fn => fn.UserMonitoredRoute)
+                .ThenInclude(umr => umr.User)
             .Where(fn => fn.NotificationDate == null)
             .ToListAsync();
         }
