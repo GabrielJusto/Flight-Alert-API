@@ -29,7 +29,7 @@ public class FlightNotificationRepository(
         }
     }
 
-    public async Task<List<FlightNotification>> GetAllAsync()
+    public async Task<List<FlightNotification>> GetAllToNotifyAsync()
     {
         try
         {
@@ -38,6 +38,7 @@ public class FlightNotificationRepository(
                 .ThenInclude(mr => mr.OriginAirport)
             .Include(fn => fn.MonitoredRoute)
                 .ThenInclude(mr => mr.DestinationAirport)
+            .Where(fn => fn.NotificationDate == null)
             .ToListAsync();
         }
         catch(Exception)
@@ -57,6 +58,22 @@ public class FlightNotificationRepository(
         catch(Exception ex)
         {
             _logger.LogError(ex, "An error occurred while deleting all FlightNotifications");
+            throw;
+        }
+    }
+
+    public async Task SetNotifiedAsync(FlightNotification notification)
+    {
+        try
+        {
+            notification.NotificationDate = DateTime.UtcNow;
+            _context.FlightNotifications.Update(notification);
+            await _context.SaveChangesAsync();
+
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while setting FlightNotification as notified with id {Id}", notification.FlightNotificationId);
             throw;
         }
     }

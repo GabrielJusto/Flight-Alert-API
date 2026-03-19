@@ -20,7 +20,8 @@ public class AirportRepository(
         try
         {
             return await _context_.Airports.FirstOrDefaultAsync(a => a.IataCode == iataCode);
-        }catch(Exception ex)
+        }
+        catch(Exception ex)
         {
             _logger.LogError(ex, "An error occurred while fetching airport with IATA code {IataCode}", iataCode);
             throw;

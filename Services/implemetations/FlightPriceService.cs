@@ -42,6 +42,7 @@ public class FlightPriceService(
                 {
                     MonitoredRouteId = route.Id,
                     Price = cheapestFlight.Price ?? 0,
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 await _flightNotificationRepository.AddAllFlightNotificationsAsync(new List<FlightNotification> { notification });
