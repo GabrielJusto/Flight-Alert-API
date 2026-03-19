@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flight-alert-api
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DATABASE_URL}
+      # JWT Configuration
+      - Jwt__Secret=${JWT_SECRET}
+      - Jwt__Audience=FlightAlertAPI
+      - Jwt__Issuer=https://localhost:8080
+      - Jwt__ExpiryInMinutes=60
+      # SerpApi Configuration
+      - SerpApi__ApiKey=${SERPAPI_KEY}
+      # Twilio Configuration
+      - Twilio__AccountSid=${TWILIO_ACCOUNT_SID}
+      - Twilio__AuthToken=${TWILIO_AUTH_TOKEN}
+    volumes:
+      - ./Logs:/app/Logs
+    restart: unless-stopped
