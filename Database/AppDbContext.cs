@@ -38,14 +38,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
         modelBuilder.Entity<UserMonitoredRoute>()
             .HasOne(umr => umr.MonitoredRoute)
-            .WithMany()
+            .WithMany(mr => mr.UserMonitoredRoutes)
             .HasForeignKey(umr => umr.MonitoredRouteId)
             .HasPrincipalKey(mr => mr.Id);
 
         modelBuilder.Entity<FlightNotification>()
-            .HasOne(fn => fn.MonitoredRoute)
-            .WithMany(mr => mr.FlightNotifications)
-            .HasForeignKey(fn => fn.MonitoredRouteId)
-            .HasPrincipalKey(mr => mr.Id);
+            .HasOne(fn => fn.UserMonitoredRoute)
+            .WithMany(umr => umr.FlightNotifications)
+            .HasForeignKey(fn => fn.UserMonitoredRouteId)
+            .HasPrincipalKey(umr => umr.UserMonitoredRouteId);
     }
 }

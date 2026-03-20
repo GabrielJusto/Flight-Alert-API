@@ -10,4 +10,5 @@ public class UserMonitoredRoute
 
     public virtual User User { get; set; } = null!;
     public virtual MonitoredRoute MonitoredRoute { get; set; } = null!;
+    public virtual List<FlightNotification> FlightNotifications { get; set; } = new List<FlightNotification>();
 }

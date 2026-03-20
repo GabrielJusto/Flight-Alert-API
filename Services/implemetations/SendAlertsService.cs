@@ -16,16 +16,12 @@ public class SendAlertsService(
     public async Task SendAlertsAsync()
     {
 
-        List<FlightNotification> notifications = await _flightNotificationRepository.GetAllAsync();
+        List<FlightNotification> notifications = await _flightNotificationRepository.GetAllToNotifyAsync();
 
         foreach(var notification in notifications)
         {
             await _whatsappService.SendMessage(notification);
+            await _flightNotificationRepository.SetNotifiedAsync(notification);
         }
-
-        await _flightNotificationRepository.DeleteAllAsync();
-
-
-
     }
 }

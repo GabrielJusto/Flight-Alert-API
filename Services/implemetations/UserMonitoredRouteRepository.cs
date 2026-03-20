@@ -37,8 +37,7 @@ public class UserMonitoredRouteRepository(
             .ThenInclude(mr => mr.OriginAirport)
             .Include(umr => umr.MonitoredRoute)
             .ThenInclude(mr => mr.DestinationAirport)
-            .Include(umr => umr.MonitoredRoute)
-            .ThenInclude(mr => mr.FlightNotifications)
+            .Include(umr => umr.FlightNotifications)
             .ToListAsync();
     }
 

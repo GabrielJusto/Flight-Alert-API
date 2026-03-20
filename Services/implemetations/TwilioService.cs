@@ -31,7 +31,7 @@ public class TwilioService : IWhatsappService
         {
             From = new PhoneNumber("whatsapp:+"),
             ContentSid = "HX2d281e2dc32c80ae3802a14c9c00c0d3",
-            ContentVariables = $"{{\"Origin\":\"{data.MonitoredRoute.OriginAirport.Name}\",\"Destination\":\"{data.MonitoredRoute.DestinationAirport.Name}\",\"Price\":\"{data.Price}\"}}"
+            ContentVariables = $"{{\"Origin\":\"{data.UserMonitoredRoute.MonitoredRoute.OriginAirport.Name}\",\"Destination\":\"{data.UserMonitoredRoute.MonitoredRoute.DestinationAirport.Name}\",\"Price\":\"{data.Price}\"}}"
         };
 
         MessageResource message = await MessageResource.CreateAsync(messageOptions);

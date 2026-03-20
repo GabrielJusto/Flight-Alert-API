@@ -50,6 +50,7 @@ public class MonitoredRouteRepository(
             return await _dbContext.MonitoredRoutes
             .Include(mr => mr.OriginAirport)
             .Include(mr => mr.DestinationAirport)
+            .Include(mr => mr.UserMonitoredRoutes)
             .ToListAsync();
         }
         catch(Exception ex)

@@ -10,5 +10,5 @@ public class MonitoredRoute
 
     public virtual Airport OriginAirport { get; set; } = null!;
     public virtual Airport DestinationAirport { get; set; } = null!;
-    public virtual List<FlightNotification> FlightNotifications { get; set; } = new List<FlightNotification>();
+    public virtual List<UserMonitoredRoute> UserMonitoredRoutes { get; set; } = new List<UserMonitoredRoute>();
 }

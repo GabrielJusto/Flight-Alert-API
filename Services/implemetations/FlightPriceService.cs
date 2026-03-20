@@ -20,7 +20,7 @@ public class FlightPriceService(
     {
         List<MonitoredRoute> monitoredRoutes = await _monitoredRouteRepository.GetAllAsync();
 
-        foreach(var route in monitoredRoutes)
+        foreach(MonitoredRoute route in monitoredRoutes)
         {
             SerpGoogleFlightsRequest request = new()
             {
@@ -38,15 +38,17 @@ public class FlightPriceService(
 
             if(cheapestFlight != null)
             {
-                FlightNotification notification = new()
+                foreach(UserMonitoredRoute umr in route.UserMonitoredRoutes)
                 {
-                    MonitoredRouteId = route.Id,
-                    Price = cheapestFlight.Price ?? 0,
-                };
-
-                await _flightNotificationRepository.AddAllFlightNotificationsAsync(new List<FlightNotification> { notification });
+                    FlightNotification notification = new()
+                    {
+                        UserMonitoredRouteId = umr.UserMonitoredRouteId,
+                        Price = cheapestFlight.Price ?? 0,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    await _flightNotificationRepository.AddAllFlightNotificationsAsync(new List<FlightNotification> { notification });
+                }
             }
-
         }
     }
 }

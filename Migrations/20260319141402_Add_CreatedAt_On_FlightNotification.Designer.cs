@@ -3,6 +3,7 @@ using System;
 using Flight_Alert_API.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Flight_Alert_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260319141402_Add_CreatedAt_On_FlightNotification")]
+    partial class Add_CreatedAt_On_FlightNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,18 +115,18 @@ namespace Flight_Alert_API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("MonitoredRouteId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("NotificationDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("UserMonitoredRouteId")
-                        .HasColumnType("integer");
-
                     b.HasKey("FlightNotificationId");
 
-                    b.HasIndex("UserMonitoredRouteId");
+                    b.HasIndex("MonitoredRouteId");
 
                     b.ToTable("FlightNotifications");
                 });
@@ -384,13 +387,13 @@ namespace Flight_Alert_API.Migrations
 
             modelBuilder.Entity("Flight_Alert_API.Models.FlightNotification", b =>
                 {
-                    b.HasOne("Flight_Alert_API.Models.UserMonitoredRoute", "UserMonitoredRoute")
+                    b.HasOne("Flight_Alert_API.Models.MonitoredRoute", "MonitoredRoute")
                         .WithMany("FlightNotifications")
-                        .HasForeignKey("UserMonitoredRouteId")
+                        .HasForeignKey("MonitoredRouteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserMonitoredRoute");
+                    b.Navigation("MonitoredRoute");
                 });
 
             modelBuilder.Entity("Flight_Alert_API.Models.MonitoredRoute", b =>
@@ -415,7 +418,7 @@ namespace Flight_Alert_API.Migrations
             modelBuilder.Entity("Flight_Alert_API.Models.UserMonitoredRoute", b =>
                 {
                     b.HasOne("Flight_Alert_API.Models.MonitoredRoute", "MonitoredRoute")
-                        .WithMany("UserMonitoredRoutes")
+                        .WithMany()
                         .HasForeignKey("MonitoredRouteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -483,11 +486,6 @@ namespace Flight_Alert_API.Migrations
                 });
 
             modelBuilder.Entity("Flight_Alert_API.Models.MonitoredRoute", b =>
-                {
-                    b.Navigation("UserMonitoredRoutes");
-                });
-
-            modelBuilder.Entity("Flight_Alert_API.Models.UserMonitoredRoute", b =>
                 {
                     b.Navigation("FlightNotifications");
                 });
