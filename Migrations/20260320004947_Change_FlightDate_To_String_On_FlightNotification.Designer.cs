@@ -3,6 +3,7 @@ using System;
 using Flight_Alert_API.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Flight_Alert_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260320004947_Change_FlightDate_To_String_On_FlightNotification")]
+    partial class Change_FlightDate_To_String_On_FlightNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,8 +115,9 @@ namespace Flight_Alert_API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("FlightDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("FlightDate")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("NotificationDate")
                         .HasColumnType("timestamp with time zone");

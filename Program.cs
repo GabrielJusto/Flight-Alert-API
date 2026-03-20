@@ -95,15 +95,15 @@ if(app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
+using(IServiceScope scope = app.Services.CreateScope())
 {
-    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-    
+    IRecurringJobManager recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
     recurringJobManager.AddOrUpdate<IFlightPriceService>(
         "check-flight-prices",
         service => service.CheckAllFlightPricesAsync(),
         Cron.Daily(7));
-    
+
     recurringJobManager.AddOrUpdate<ISendAlertsService>(
         "send-alerts",
         service => service.SendAlertsAsync(),
