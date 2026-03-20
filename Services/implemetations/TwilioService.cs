@@ -41,8 +41,8 @@ public class TwilioService(
             )
             {
                 From = new PhoneNumber(_twilioConfig.FromPhoneNumber),
-                ContentSid = "HX696be6112000fe7b227d78ba94b48d63",
-                ContentVariables = $"{{\"origin\":\"{data.UserMonitoredRoute.MonitoredRoute.OriginAirport.IataCode}\",\"destination\":\"{data.UserMonitoredRoute.MonitoredRoute.DestinationAirport.IataCode}\",\"price\":\"{data.Price}\",\"date\":\"{data.FlightDate:dd/MM/yyyy HH:mm}\"}}"
+                ContentSid = "HXfb76be3836fd84782797021fc299f255",
+                ContentVariables = $"{{\"link\":\"{data.Link}\",\"origin\":\"{data.UserMonitoredRoute.MonitoredRoute.OriginAirport.IataCode}\",\"destination\":\"{data.UserMonitoredRoute.MonitoredRoute.DestinationAirport.IataCode}\",\"price\":\"{data.Price}\",\"date\":\"{data.FlightDate:dd/MM/yyyy HH:mm}\"}}"
             };
 
             MessageResource message = await MessageResource.CreateAsync(messageOptions);
