@@ -106,6 +106,8 @@ public class FlightOption
 
     [JsonProperty("departure_token")]
     public string? DepartureToken { get; set; }
+    [JsonProperty("booking_token")]
+    public string? BookingToken { get; set; }
 }
 
 public class FlightSegment

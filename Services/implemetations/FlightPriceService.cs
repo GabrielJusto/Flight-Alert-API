@@ -45,8 +45,14 @@ public class FlightPriceService(
                 if(cheapestFlight != null)
                 {
                     _logger.LogInformation("Found cheapest flight for route {RouteId} with price {Price}", route.Id, cheapestFlight.Price);
+                    request.BookingToken = cheapestFlight.BookingToken;
+                    List<BookingOptionDto> bookingOptions = await _serpGoogleFlightsService.GetBookingOptionsAsync(request);
+                    _logger.LogInformation("Retrieved {Count} booking options for route {RouteId}", bookingOptions.Count, route.Id);
+
                     foreach(UserMonitoredRoute umr in route.UserMonitoredRoutes)
                     {
+                        BookingOptionDto? firstBookingOption = bookingOptions.FirstOrDefault();
+                        string link = $"{firstBookingOption?.Together?.BookingRequest?.Url}?{firstBookingOption?.Together?.BookingRequest?.PostData}";
                         string? departureTimeStr = cheapestFlight.Segments.FirstOrDefault()?.DepartureTime;
                         DateTime flightDate = DateTime.ParseExact(
                             departureTimeStr ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm"),
@@ -59,7 +65,8 @@ public class FlightPriceService(
                             UserMonitoredRouteId = umr.UserMonitoredRouteId,
                             Price = cheapestFlight.Price ?? 0,
                             CreatedAt = DateTime.UtcNow,
-                            FlightDate = flightDate
+                            FlightDate = flightDate,
+                            Link = link
                         };
                         await _flightNotificationRepository.AddAllFlightNotificationsAsync(new List<FlightNotification> { notification });
                         _logger.LogInformation("Created flight notification for UserMonitoredRouteId: {UserMonitoredRouteId} with price {Price} and flight date {FlightDate}", umr.UserMonitoredRouteId, notification.Price, notification.FlightDate);

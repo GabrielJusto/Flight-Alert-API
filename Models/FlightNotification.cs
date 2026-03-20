@@ -9,4 +9,5 @@ public class FlightNotification
     public DateTime FlightDate { get; set; }
     public DateTime? NotificationDate { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string? Link { get; set; }
 }

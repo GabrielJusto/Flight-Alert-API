@@ -16,5 +16,7 @@ public class SerpGoogleFlightsRequest
     public required string OutboundDate { get; set; }
     [JsonProperty("return_date")]
     public string? ReturnDate { get; set; }
+    [JsonProperty("booking_token")]
+    public string? BookingToken { get; set; }
 
 }

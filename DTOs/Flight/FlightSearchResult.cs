@@ -6,6 +6,7 @@ public class FlightSearchResult
     public string? Currency { get; set; }
     public int TotalDuration { get; set; }
     public string? Type { get; set; }
+    public string? BookingToken { get; set; }
     public List<FlightSegmentInfo> Segments { get; set; } = new();
     public List<LayoverInfo> Layovers { get; set; } = new();
 
