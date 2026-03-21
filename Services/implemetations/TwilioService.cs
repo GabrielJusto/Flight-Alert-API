@@ -13,10 +13,12 @@ using Flight_Alert_API.Models;
 using Microsoft.Extensions.Options;
 
 public class TwilioService(
+    IGoogleLinkService googleLinkService,
     ILogger<TwilioService> logger,
     IOptions<TwilioConfiguration> twilioOptions
 ) : IWhatsappService
 {
+    private readonly IGoogleLinkService _googleLinkService = googleLinkService;
     private readonly TwilioConfiguration _twilioConfig = twilioOptions.Value;
     private readonly ILogger<TwilioService> _logger = logger;
 
@@ -35,14 +37,16 @@ public class TwilioService(
                 throw new ArgumentException("User phone number is not provided.");
             }
 
+            string link = await _googleLinkService.GetRedirectUrlAsync(data.Link ?? string.Empty);
             _logger.LogInformation("Sending WhatsApp message to {PhoneNumber} for FlightNotificationId: {FlightNotificationId}", phoneNumber, data.FlightNotificationId);
             CreateMessageOptions messageOptions = new(
                 new PhoneNumber($"whatsapp:{phoneNumber}")
             )
             {
+
                 From = new PhoneNumber(_twilioConfig.FromPhoneNumber),
                 ContentSid = "HXfb76be3836fd84782797021fc299f255",
-                ContentVariables = $"{{\"link\":\"{data.Link}\",\"origin\":\"{data.UserMonitoredRoute.MonitoredRoute.OriginAirport.IataCode}\",\"destination\":\"{data.UserMonitoredRoute.MonitoredRoute.DestinationAirport.IataCode}\",\"price\":\"{data.Price}\",\"date\":\"{data.FlightDate:dd/MM/yyyy HH:mm}\"}}"
+                ContentVariables = $"{{\"link\":\"{link}\",\"origin\":\"{data.UserMonitoredRoute.MonitoredRoute.OriginAirport.IataCode}\",\"destination\":\"{data.UserMonitoredRoute.MonitoredRoute.DestinationAirport.IataCode}\",\"price\":\"{data.Price}\",\"date\":\"{data.FlightDate:dd/MM/yyyy HH:mm}\"}}"
             };
 
             MessageResource message = await MessageResource.CreateAsync(messageOptions);

@@ -63,6 +63,8 @@ builder.Services.AddHangfire(config => config
 builder.Services.AddHangfireServer();
 
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMonitoredRouteService, MonitoredRouteService>();
@@ -76,6 +78,7 @@ builder.Services.AddScoped<IMonitoredRouteService, MonitoredRouteService>();
 builder.Services.AddScoped<ISendAlertsService, SendAlertsService>();
 builder.Services.AddScoped<ISerpGoogleFlightsService, SerpGoogleFlightsService>();
 builder.Services.AddScoped<IFlightNotificationRepository, FlightNotificationRepository>();
+builder.Services.AddScoped<IGoogleLinkService, GoogleLinkService>();
 
 builder.Services.AddOpenApi();
 
