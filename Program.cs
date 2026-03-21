@@ -28,6 +28,22 @@ builder.Services.Configure<TwilioConfiguration>(builder.Configuration.GetSection
 builder.Services.Configure<SerpApiConfiguration>(builder.Configuration.GetSection("SerpApi"));
 
 builder.Services.AddControllers();
+
+string[]? allowedGateways = builder.Configuration.GetSection("AllowedGateways").Get<string[]>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMyWebsite", policy =>
+    {
+        policy.WithOrigins(allowedGateways ?? Array.Empty<string>())
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
+
+
 // Configurar DbContext com PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -95,6 +111,8 @@ if(app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseCors("AllowMyWebsite");
 
 app.MapControllers();
 
