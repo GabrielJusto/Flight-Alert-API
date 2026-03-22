@@ -3,11 +3,12 @@ using Flight_Alert_API.DTOs.User;
 using Flight_Alert_API.Exceptions;
 using Flight_Alert_API.Services.Interfaces;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flight_Alert_API.Controllers;
 
-
+[Authorize(AuthenticationSchemes = "Bearer")]
 [ApiController]
 [Route("/users")]
 public class UserController(

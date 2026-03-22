@@ -4,10 +4,12 @@ using Flight_Alert_API.DTOs.Route;
 using Flight_Alert_API.Exceptions;
 using Flight_Alert_API.Services.Interfaces;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flight_Alert_API.Controllers;
 
+[Authorize(AuthenticationSchemes = "Bearer")]
 [ApiController]
 [Route("/routes")]
 public class RouteController(

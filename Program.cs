@@ -6,6 +6,10 @@ using Flight_Alert_API.Repositories.Interfaces;
 using Flight_Alert_API.Services.implemetations;
 using Flight_Alert_API.Services.Interfaces;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 using Hangfire;
 using Hangfire.PostgreSql;
 
@@ -20,6 +24,9 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
 
 builder.Host.UseSerilog();
 
@@ -40,6 +47,30 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowCredentials();
     });
+});
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    IConfigurationSection jwtSection = builder.Configuration.GetSection("Jwt");
+    string? secret = jwtSection.GetValue<string>("Secret");
+    string? issuer = jwtSection.GetValue<string>("Issuer");
+    string? audience = jwtSection.GetValue<string>("Audience");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret ?? string.Empty))
+    };
 });
 
 
@@ -113,7 +144,8 @@ if(app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowMyWebsite");
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 using(IServiceScope scope = app.Services.CreateScope())
@@ -130,4 +162,5 @@ using(IServiceScope scope = app.Services.CreateScope())
         service => service.SendAlertsAsync(),
         Cron.Daily(7, 30));
 }
+
 app.Run();
