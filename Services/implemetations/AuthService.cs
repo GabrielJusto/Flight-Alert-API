@@ -57,7 +57,7 @@ public class AuthService(
         }
 
         string token = CreateToken(user.Id);
-        return new AuthResponse(token);
+        return new AuthResponse(user.Id, token);
     }
 
 
@@ -112,7 +112,7 @@ public class AuthService(
             }
 
             string newToken = CreateToken(userId);
-            return new AuthResponse(newToken);
+            return new AuthResponse(userId, newToken);
         }
         catch
         {
