@@ -8,6 +8,7 @@ using Flight_Alert_API.DTOs;
 using Flight_Alert_API.Exceptions;
 using Flight_Alert_API.Models;
 using Flight_Alert_API.Services.Interfaces;
+using Flight_Alert_API.Validations;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -17,28 +18,46 @@ namespace Flight_Alert_API.Services.implemetations;
 
 public class AuthService(
     IOptions<JwtConfiguration> jwtConfig,
-    UserManager<User> userManager) : IAuthService
+    UserManager<User> userManager,
+    IValidationProvider validationProvider,
+    ILogger<AuthService> logger) : IAuthService
 {
     private readonly JwtConfiguration _jwtConfig = jwtConfig.Value;
     private readonly UserManager<User> _userManager = userManager;
+    private readonly IValidationProvider _validationProvider = validationProvider;
+    private readonly ILogger<AuthService> _logger = logger;
 
     public async Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto data)
     {
-        User user = new()
+        try
         {
-            Email = data.Email,
-            UserName = data.Email,
-            PhoneNumber = data.PhoneNumber,
-            Name = data.Name,
-            LastName = data.LastName
-        };
-        IdentityResult result = await _userManager.CreateAsync(user, data.Password);
+            List<IValidation> validations = _validationProvider.GetValidations(Enuns.ValidationsSelection.UserRegister);
+            Validator validator = new(validations, data);
+            await validator.Validate();
 
-        if(!result.Succeeded)
-        {
-            throw new UserRegisterException("User registration failed: ", result.Errors);
+            User user = new()
+            {
+                Email = data.Email,
+                UserName = data.Email,
+                PhoneNumber = data.PhoneNumber,
+                Name = data.Name,
+                LastName = data.LastName
+            };
+            IdentityResult result = await _userManager.CreateAsync(user, data.Password);
+
+            if(!result.Succeeded)
+            {
+                _logger.LogWarning("User registration failed: {Errors}", result.Errors);
+                throw new UserRegisterException("User registration failed: ", result.Errors);
+            }
+            return new UserRegisterResponseDto(user.Id, CreateToken(user.Id));
         }
-        return new UserRegisterResponseDto(user.Id, CreateToken(user.Id));
+        catch(ValidationException ex)
+        {
+            _logger.LogWarning("Validation failed during user registration: {Errors}", ex.Errors);
+            throw;
+        }
+
     }
 
     public async Task<AuthResponse?> LoginAsync(AuthenticationDto authDto)

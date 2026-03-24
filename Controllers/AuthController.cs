@@ -30,6 +30,10 @@ public class AuthController(
         {
             return BadRequest(new { error = ex.Message, details = ex.Errors });
         }
+        catch(ValidationException ex)
+        {
+            return BadRequest(new { error = "Validation failed", details = ex.Errors });
+        }
         catch(Exception)
         {
             return StatusCode(500, new { error = "An unexpected error occurred." });

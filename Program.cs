@@ -1,3 +1,5 @@
+using System.Text;
+
 using Flight_Alert_API.Configuration;
 using Flight_Alert_API.Database;
 using Flight_Alert_API.Models;
@@ -5,16 +7,16 @@ using Flight_Alert_API.Repositories.Implementations;
 using Flight_Alert_API.Repositories.Interfaces;
 using Flight_Alert_API.Services.implemetations;
 using Flight_Alert_API.Services.Interfaces;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Flight_Alert_API.Validations;
+using Flight_Alert_API.Validations.Auth;
 
 using Hangfire;
 using Hangfire.PostgreSql;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 using Serilog;
 
@@ -126,6 +128,9 @@ builder.Services.AddScoped<ISendAlertsService, SendAlertsService>();
 builder.Services.AddScoped<ISerpGoogleFlightsService, SerpGoogleFlightsService>();
 builder.Services.AddScoped<IFlightNotificationRepository, FlightNotificationRepository>();
 builder.Services.AddScoped<IGoogleLinkService, GoogleLinkService>();
+builder.Services.AddScoped<IValidationProvider, ValidationProvider>();
+builder.Services.AddScoped<PhoneNumberAlreadyExistsValidation>();
+
 
 builder.Services.AddOpenApi();
 

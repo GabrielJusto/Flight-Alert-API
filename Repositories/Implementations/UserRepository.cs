@@ -3,6 +3,8 @@ using Flight_Alert_API.Database;
 using Flight_Alert_API.Models;
 using Flight_Alert_API.Repositories.Interfaces;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Flight_Alert_API.Repositories.Implementations;
 
 public class UserRepository(
@@ -50,6 +52,19 @@ public class UserRepository(
         catch(Exception ex)
         {
             _logger.LogError(ex, "An error occurred while fetching user with Id: {Id}", id);
+            throw;
+        }
+    }
+
+    public async Task<User?> GetUserByPhoneNumberAsync(string phoneNumber)
+    {
+        try
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while fetching user with phone number: {PhoneNumber}", phoneNumber);
             throw;
         }
     }
