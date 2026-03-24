@@ -27,4 +27,17 @@ public class AirportRepository(
             throw;
         }
     }
+
+    public async Task<List<Airport>> GetAllAsync()
+    {
+        try
+        {
+            return await _context_.Airports.ToListAsync();
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while fetching all airports");
+            throw;
+        }
+    }
 }

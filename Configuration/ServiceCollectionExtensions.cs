@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGoogleLinkService, GoogleLinkService>();
         services.AddScoped<IValidationProvider, ValidationProvider>();
         services.AddScoped<PhoneNumberAlreadyExistsValidation>();
+        services.AddScoped<IAirportService, AirportService>();
         return services;
     }
 }
