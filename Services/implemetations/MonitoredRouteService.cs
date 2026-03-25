@@ -56,10 +56,13 @@ public class MonitoredRouteService(
 
         return userMonitoredRoutes.Select(umr => new MonitoredRouteDetail
         {
+            RouteId = umr.MonitoredRoute.Id,
+            UserId = umr.UserId,
             OriginIataCode = umr.MonitoredRoute.OriginAirport.IataCode,
             DestinationIataCode = umr.MonitoredRoute.DestinationAirport.IataCode,
             DepartureDay = umr.MonitoredRoute.DepartureDay,
-            Price = umr.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0
+            CurrentPrice = umr.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0,
+            TargetPrice = null
         }).ToList();
     }
 
