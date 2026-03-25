@@ -29,7 +29,7 @@ public class RouteController(
     {
         try
         {
-            _logger.LogInformation("Inserting monitored route for user {UserId} from {Origin} to {Destination} on {DepartureDate}", request.UserId, request.OriginIataCode, request.DestinationIataCode, request.DepartureDay);
+            _logger.LogInformation("Inserting monitored route: {@request}", request);
             _jwtTokenService.CheckUserId(request.UserId, User);
             await _monitoredRouteService.InsertMonitoredRouteAsync(request);
             return Ok();
