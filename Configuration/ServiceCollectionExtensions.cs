@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IValidationProvider, ValidationProvider>();
         services.AddScoped<PhoneNumberAlreadyExistsValidation>();
         services.AddScoped<IAirportService, AirportService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
         return services;
     }
 }

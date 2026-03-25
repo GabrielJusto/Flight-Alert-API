@@ -15,27 +15,38 @@ namespace Flight_Alert_API.Controllers;
 public class RouteController(
     IMonitoredRouteService monitoredRouteService,
     ILogger<RouteController> logger,
-    IWebHostEnvironment env
+    IWebHostEnvironment env,
+    IJwtTokenService jwtTokenService
 ) : ControllerBase
 {
     private readonly IMonitoredRouteService _monitoredRouteService = monitoredRouteService;
     private readonly ILogger<RouteController> _logger = logger;
     private readonly IWebHostEnvironment _env = env;
+    private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
 
     [HttpPost("insert")]
     public async Task<IActionResult> InsertRoute([FromBody] RouteRegisterRequest request)
     {
         try
         {
+            _logger.LogInformation("Inserting monitored route for user {UserId} from {Origin} to {Destination} on {DepartureDate}", request.UserId, request.OriginIataCode, request.DestinationIataCode, request.DepartureDay);
+            _jwtTokenService.CheckUserId(request.UserId, User);
             await _monitoredRouteService.InsertMonitoredRouteAsync(request);
             return Ok();
         }
         catch(EntityNotFoundException ex)
         {
+            _logger.LogWarning("Entity not found while inserting route for user {UserId}: {Message}", request.UserId, ex.Message);
             return NotFound(new { error = ex.Message });
         }
-        catch(Exception)
+        catch(UnauthorizedAccessException ex)
         {
+            _logger.LogWarning("Unauthorized access attempt to insert route for user {UserId}: {Message}", request.UserId, ex.Message);
+            return StatusCode(403, new { error = ex.Message });
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while inserting route for user {UserId}", request.UserId);
             return StatusCode(500, new { error = "An unexpected error occurred." });
         }
     }
@@ -63,9 +74,15 @@ public class RouteController(
     {
         try
         {
+            _jwtTokenService.CheckUserId(userId, User);
             _logger.LogInformation("Getting all monitored routes for user {UserId}", userId);
             List<MonitoredRouteDetail> routes = await _monitoredRouteService.GetUserMonitoredRoutesAsync(userId);
             return Ok(routes);
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning("Unauthorized access attempt to get routes for user {UserId}: {Message}", userId, ex.Message);
+            return StatusCode(403, new { error = ex.Message });
         }
         catch(Exception ex)
         {
