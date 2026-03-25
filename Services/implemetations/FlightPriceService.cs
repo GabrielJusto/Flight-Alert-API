@@ -4,12 +4,15 @@ using Flight_Alert_API.Models;
 using Flight_Alert_API.Repositories.Interfaces;
 using Flight_Alert_API.Services.Interfaces;
 
+using Hangfire;
+
 namespace Flight_Alert_API.Services.implemetations;
 
 public class FlightPriceService(
         ISerpGoogleFlightsService serpGoogleFlightsService,
         IMonitoredRouteRepository monitoredRouteRepository,
         IFlightNotificationRepository flightNotificationRepository,
+        ISendAlertsService sendAlertsService,
         ILogger<FlightPriceService> logger
 ) : IFlightPriceService
 {
@@ -17,6 +20,7 @@ public class FlightPriceService(
     private readonly ISerpGoogleFlightsService _serpGoogleFlightsService = serpGoogleFlightsService;
     private readonly IMonitoredRouteRepository _monitoredRouteRepository = monitoredRouteRepository;
     private readonly IFlightNotificationRepository _flightNotificationRepository = flightNotificationRepository;
+    private readonly ISendAlertsService _sendAlertsService = sendAlertsService;
     private readonly ILogger<FlightPriceService> _logger = logger;
     public async Task CheckAllFlightPricesAsync()
     {
@@ -38,7 +42,20 @@ public class FlightPriceService(
         }
     }
 
-    public async Task ProcessMonitoredRouteAsync(MonitoredRoute route)
+    public async Task ProcessMonitoredRouteAsync(int monitoredRouteId)
+    {
+        MonitoredRoute? route = await _monitoredRouteRepository.GetToProcessMonitoredAsync(monitoredRouteId);
+
+        if(route == null)
+        {
+            _logger.LogWarning("Monitored route with ID {MonitoredRouteId} not found", monitoredRouteId);
+            return;
+        }
+
+        await ProcessMonitoredRouteAsync(route);
+        BackgroundJob.Enqueue(() => _sendAlertsService.SendAlertsAsync());
+    }
+    private async Task ProcessMonitoredRouteAsync(MonitoredRoute route)
     {
         SerpGoogleFlightsRequest request = new()
         {

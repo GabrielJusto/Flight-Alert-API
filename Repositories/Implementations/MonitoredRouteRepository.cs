@@ -42,6 +42,22 @@ public class MonitoredRouteRepository(
             throw;
         }
     }
+    public async Task<MonitoredRoute?> GetToProcessMonitoredAsync(int id)
+    {
+        try
+        {
+            return await _dbContext.MonitoredRoutes
+            .Include(mr => mr.OriginAirport)
+            .Include(mr => mr.DestinationAirport)
+            .Include(mr => mr.UserMonitoredRoutes)
+            .FirstOrDefaultAsync(mr => mr.Id == id);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while fetching a MonitoredRoute by Id: {Id}", id);
+            throw;
+        }
+    }
 
     public async Task<List<MonitoredRoute>> GetAllAsync()
     {

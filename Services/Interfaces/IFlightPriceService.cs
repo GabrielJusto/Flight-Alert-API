@@ -6,5 +6,5 @@ namespace Flight_Alert_API.Services.Interfaces;
 public interface IFlightPriceService
 {
     public Task CheckAllFlightPricesAsync();
-    public Task ProcessMonitoredRouteAsync(MonitoredRoute route);
+    public Task ProcessMonitoredRouteAsync(int monitoredRouteId);
 }

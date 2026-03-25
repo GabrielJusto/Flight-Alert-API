@@ -5,14 +5,15 @@ using Flight_Alert_API.Models;
 using Flight_Alert_API.Repositories.Interfaces;
 using Flight_Alert_API.Services.Interfaces;
 
+using Hangfire;
+
 namespace Flight_Alert_API.Services.implemetations;
 
 public class MonitoredRouteService(
     IAirportRepository airportRepository,
     IMonitoredRouteRepository monitoredRouteRepository,
     IUserMonitoredRouteRepository userMonitoredRouteRepository,
-    IFlightPriceService flightPriceService,
-    ISendAlertsService sendAlertsService
+    IFlightPriceService flightPriceService
 ) : IMonitoredRouteService
 {
 
@@ -20,7 +21,6 @@ public class MonitoredRouteService(
     private readonly IMonitoredRouteRepository _monitoredRouteRepository = monitoredRouteRepository;
     private readonly IUserMonitoredRouteRepository _userMonitoredRouteRepository = userMonitoredRouteRepository;
     private readonly IFlightPriceService _flightPriceService = flightPriceService;
-    private readonly ISendAlertsService _sendAlertsService = sendAlertsService;
     public async Task InsertMonitoredRouteAsync(RouteRegisterRequest request)
     {
         Airport? originAirport = await _airportRepository.GetByIATACodeAsync(request.OriginIataCode);
@@ -41,8 +41,8 @@ public class MonitoredRouteService(
         };
 
         await _userMonitoredRouteRepository.Insert(userMonitoredRoute);
-        await _flightPriceService.ProcessMonitoredRouteAsync(monitoredRoute);
-        await _sendAlertsService.SendAlertsAsync();
+        BackgroundJob.Enqueue(() => _flightPriceService.ProcessMonitoredRouteAsync(monitoredRoute.Id));
+
     }
 
     public async Task DeleteMonitoredRouteAsync(int id)
