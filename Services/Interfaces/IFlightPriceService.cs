@@ -1,7 +1,10 @@
 
+using Flight_Alert_API.Models;
+
 namespace Flight_Alert_API.Services.Interfaces;
 
 public interface IFlightPriceService
 {
-    Task CheckAllFlightPricesAsync();
+    public Task CheckAllFlightPricesAsync();
+    public Task ProcessMonitoredRouteAsync(MonitoredRoute route);
 }

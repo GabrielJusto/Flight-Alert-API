@@ -10,13 +10,15 @@ namespace Flight_Alert_API.Services.implemetations;
 public class MonitoredRouteService(
     IAirportRepository airportRepository,
     IMonitoredRouteRepository monitoredRouteRepository,
-    IUserMonitoredRouteRepository userMonitoredRouteRepository
+    IUserMonitoredRouteRepository userMonitoredRouteRepository,
+    IFlightPriceService flightPriceService
 ) : IMonitoredRouteService
 {
 
     private readonly IAirportRepository _airportRepository = airportRepository;
     private readonly IMonitoredRouteRepository _monitoredRouteRepository = monitoredRouteRepository;
     private readonly IUserMonitoredRouteRepository _userMonitoredRouteRepository = userMonitoredRouteRepository;
+    private readonly IFlightPriceService _flightPriceService = flightPriceService;
     public async Task InsertMonitoredRouteAsync(RouteRegisterRequest request)
     {
         Airport? originAirport = await _airportRepository.GetByIATACodeAsync(request.OriginIataCode);
@@ -37,6 +39,7 @@ public class MonitoredRouteService(
         };
 
         await _userMonitoredRouteRepository.Insert(userMonitoredRoute);
+        await _flightPriceService.ProcessMonitoredRouteAsync(monitoredRoute);
     }
 
     public async Task DeleteMonitoredRouteAsync(int id)
