@@ -109,4 +109,20 @@ public class MonitoredRouteRepository(
             throw;
         }
     }
+
+    public async Task<MonitoredRoute?> GetToDeleteAsync(int id)
+    {
+        try
+        {
+            return await _dbContext.MonitoredRoutes
+                .Include(mr => mr.UserMonitoredRoutes)
+                .FirstOrDefaultAsync(mr => mr.Id == id);
+
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while fetching a MonitoredRoute for deletion with Id: {Id}", id);
+            throw;
+        }
+    }
 }

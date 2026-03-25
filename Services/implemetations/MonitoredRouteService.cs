@@ -45,16 +45,29 @@ public class MonitoredRouteService(
 
     }
 
-    public async Task DeleteMonitoredRouteAsync(int id)
+    public async Task DeleteMonitoredRouteAsync(int id, int userId)
     {
-        MonitoredRoute? monitoredRoute = await _monitoredRouteRepository.GetByIdAsync(id);
+        UserMonitoredRoute? userMonitoredRoute = await _userMonitoredRouteRepository.GetToDeleteAsync(id, userId);
+        if(userMonitoredRoute == null)
+        {
+            throw new EntityNotFoundException("Monitored route not found for the user.");
+        }
+        if(userMonitoredRoute.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("User does not have permission to delete this monitored route.");
+        }
+        await _userMonitoredRouteRepository.Delete(userMonitoredRoute);
+
+        MonitoredRoute? monitoredRoute = await _monitoredRouteRepository.GetToDeleteAsync(id);
 
         if(monitoredRoute == null)
         {
             throw new EntityNotFoundException("Monitored route not found.");
         }
-
-        await _monitoredRouteRepository.DeleteAsync(monitoredRoute);
+        if(monitoredRoute.UserMonitoredRoutes.Count == 0)
+        {
+            await _monitoredRouteRepository.DeleteAsync(monitoredRoute);
+        }
     }
 
     public async Task<List<MonitoredRouteDetail>> GetUserMonitoredRoutesAsync(int userId)
@@ -96,5 +109,4 @@ public class MonitoredRouteService(
 
         return monitoredRoute;
     }
-
 }

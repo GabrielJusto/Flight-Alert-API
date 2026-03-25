@@ -56,12 +56,17 @@ public class RouteController(
     {
         try
         {
-            await _monitoredRouteService.DeleteMonitoredRouteAsync(id);
+            int userId = _jwtTokenService.GetUserId(User);
+            await _monitoredRouteService.DeleteMonitoredRouteAsync(id, userId);
             return Ok();
         }
         catch(EntityNotFoundException ex)
         {
             return NotFound(new { error = ex.Message });
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
         }
         catch(Exception)
         {

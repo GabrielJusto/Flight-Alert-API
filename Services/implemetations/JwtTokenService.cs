@@ -8,10 +8,15 @@ public class JwtTokenService : IJwtTokenService
 {
     public void CheckUserId(int userId, ClaimsPrincipal user)
     {
-        int userIdFromToken = int.Parse(user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        int userIdFromToken = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         if(userIdFromToken != userId)
         {
             throw new UnauthorizedAccessException("User ID does not match token.");
         }
+    }
+
+    public int GetUserId(ClaimsPrincipal user)
+    {
+        return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
     }
 }
