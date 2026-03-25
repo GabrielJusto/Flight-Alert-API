@@ -32,7 +32,8 @@ public class MonitoredRouteService(
         UserMonitoredRoute userMonitoredRoute = new()
         {
             UserId = request.UserId,
-            MonitoredRouteId = monitoredRoute.Id
+            MonitoredRouteId = monitoredRoute.Id,
+            TargetPrice = request.TargetPrice
         };
 
         await _userMonitoredRouteRepository.Insert(userMonitoredRoute);
@@ -62,12 +63,17 @@ public class MonitoredRouteService(
             DestinationIataCode = umr.MonitoredRoute.DestinationAirport.IataCode,
             DepartureDay = umr.MonitoredRoute.DepartureDay,
             CurrentPrice = umr.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0,
-            TargetPrice = null
+            TargetPrice = umr.TargetPrice
         }).ToList();
     }
 
 
-    private async Task<MonitoredRoute> GetMonitoredRoute(int originAirportId, int destinationAirportId, DateOnly departureDay, DateOnly returnDay)
+    private async Task<MonitoredRoute> GetMonitoredRoute(
+        int originAirportId,
+        int destinationAirportId,
+        DateOnly departureDay,
+        DateOnly returnDay
+    )
     {
         MonitoredRoute? monitoredRoute = await _monitoredRouteRepository.GetByOriginAndDestinationAsync(originAirportId, destinationAirportId, departureDay, returnDay);
         if(monitoredRoute is null)
