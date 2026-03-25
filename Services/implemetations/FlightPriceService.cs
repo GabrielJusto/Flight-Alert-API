@@ -11,6 +11,7 @@ namespace Flight_Alert_API.Services.implemetations;
 public class FlightPriceService(
         ISerpGoogleFlightsService serpGoogleFlightsService,
         IMonitoredRouteRepository monitoredRouteRepository,
+        IUserMonitoredRouteRepository userMonitoredRouteRepository,
         IFlightNotificationRepository flightNotificationRepository,
         ISendAlertsService sendAlertsService,
         ILogger<FlightPriceService> logger
@@ -19,6 +20,7 @@ public class FlightPriceService(
 
     private readonly ISerpGoogleFlightsService _serpGoogleFlightsService = serpGoogleFlightsService;
     private readonly IMonitoredRouteRepository _monitoredRouteRepository = monitoredRouteRepository;
+    private readonly IUserMonitoredRouteRepository _userMonitoredRouteRepository = userMonitoredRouteRepository;
     private readonly IFlightNotificationRepository _flightNotificationRepository = flightNotificationRepository;
     private readonly ISendAlertsService _sendAlertsService = sendAlertsService;
     private readonly ILogger<FlightPriceService> _logger = logger;
@@ -42,31 +44,58 @@ public class FlightPriceService(
         }
     }
 
-    public async Task ProcessMonitoredRouteAsync(int monitoredRouteId)
+    public async Task ProcessMonitoredRouteAsync(int userMonitoredRouteId)
     {
-        MonitoredRoute? route = await _monitoredRouteRepository.GetToProcessMonitoredAsync(monitoredRouteId);
+        UserMonitoredRoute? userMonitoredRoute = await _userMonitoredRouteRepository.GetByIdAsync(userMonitoredRouteId);
 
-        if(route == null)
+        if(userMonitoredRoute == null)
         {
-            _logger.LogWarning("Monitored route with ID {MonitoredRouteId} not found", monitoredRouteId);
+            _logger.LogWarning("UserMonitoredRoute with ID {UserMonitoredRouteId} not found", userMonitoredRouteId);
             return;
         }
 
-        await ProcessMonitoredRouteAsync(route);
+        await ProcessUserMonitoredRouteAsync(userMonitoredRoute);
         BackgroundJob.Enqueue(() => _sendAlertsService.SendAlertsAsync());
     }
     private async Task ProcessMonitoredRouteAsync(MonitoredRoute route)
     {
+        await ProcessFlightNotificationAsync(
+            route.OriginAirport.IataCode,
+            route.DestinationAirport.IataCode,
+            route.DepartureDay.ToString("yyyy-MM-dd"),
+            route.Id,
+            route.UserMonitoredRoutes
+        );
+    }
+
+    private async Task ProcessUserMonitoredRouteAsync(UserMonitoredRoute userMonitoredRoute)
+    {
+        await ProcessFlightNotificationAsync(
+            userMonitoredRoute.MonitoredRoute.OriginAirport.IataCode,
+            userMonitoredRoute.MonitoredRoute.DestinationAirport.IataCode,
+            userMonitoredRoute.MonitoredRoute.DepartureDay.ToString("yyyy-MM-dd"),
+            userMonitoredRoute.MonitoredRoute.Id,
+            new List<UserMonitoredRoute> { userMonitoredRoute }
+        );
+    }
+
+    private async Task ProcessFlightNotificationAsync(
+        string originIataCode,
+        string destinationIataCode,
+        string outboundDate,
+        int routeId,
+        IEnumerable<UserMonitoredRoute> userMonitoredRoutes)
+    {
         SerpGoogleFlightsRequest request = new()
         {
-            DepartureId = route.OriginAirport.IataCode,
-            ArrivalId = route.DestinationAirport.IataCode,
-            OutboundDate = route.DepartureDay.ToString("yyyy-MM-dd"),
+            DepartureId = originIataCode,
+            ArrivalId = destinationIataCode,
+            OutboundDate = outboundDate,
             Currency = "BRL"
         };
 
         List<FlightSearchResult> flightResults = _serpGoogleFlightsService.GetFlights(request);
-        _logger.LogInformation("Found {Count} flight results for route {RouteId}", flightResults.Count, route.Id);
+        _logger.LogInformation("Found {Count} flight results for route {RouteId}", flightResults.Count, routeId);
 
         FlightSearchResult? cheapestFlight = flightResults
             .Where(result => result.Price is not null && result.Price > 0)
@@ -74,12 +103,12 @@ public class FlightPriceService(
 
         if(cheapestFlight != null)
         {
-            _logger.LogInformation("Found cheapest flight for route {RouteId} with price {Price}", route.Id, cheapestFlight.Price);
+            _logger.LogInformation("Found cheapest flight for route {RouteId} with price {Price}", routeId, cheapestFlight.Price);
             request.BookingToken = cheapestFlight.BookingToken;
             List<BookingOptionDto> bookingOptions = await _serpGoogleFlightsService.GetBookingOptionsAsync(request);
-            _logger.LogInformation("Retrieved {Count} booking options for route {RouteId}", bookingOptions.Count, route.Id);
+            _logger.LogInformation("Retrieved {Count} booking options for route {RouteId}", bookingOptions.Count, routeId);
 
-            foreach(UserMonitoredRoute umr in route.UserMonitoredRoutes)
+            foreach(UserMonitoredRoute umr in userMonitoredRoutes)
             {
                 BookingOptionDto? firstBookingOption = bookingOptions.FirstOrDefault();
                 string link = $"{firstBookingOption?.Together?.BookingRequest?.Url}?{firstBookingOption?.Together?.BookingRequest?.PostData}";

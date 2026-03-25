@@ -41,7 +41,7 @@ public class MonitoredRouteService(
         };
 
         await _userMonitoredRouteRepository.Insert(userMonitoredRoute);
-        BackgroundJob.Enqueue(() => _flightPriceService.ProcessMonitoredRouteAsync(monitoredRoute.Id));
+        BackgroundJob.Enqueue(() => _flightPriceService.ProcessMonitoredRouteAsync(userMonitoredRoute.UserMonitoredRouteId));
 
     }
 

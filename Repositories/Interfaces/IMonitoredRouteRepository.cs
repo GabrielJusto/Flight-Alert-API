@@ -6,7 +6,6 @@ public interface IMonitoredRouteRepository
 {
     public Task Insert(MonitoredRoute monitoredRoute);
     public Task<MonitoredRoute?> GetByIdAsync(int id);
-    public Task<MonitoredRoute?> GetToProcessMonitoredAsync(int id);
     public Task<List<MonitoredRoute>> GetAllAsync();
     public Task<MonitoredRoute?> GetByOriginAndDestinationAsync(int originAirportId, int destinationAirportId, DateOnly departureDay, DateOnly returnDay);
     public Task<MonitoredRoute?> GetToDeleteAsync(int id);

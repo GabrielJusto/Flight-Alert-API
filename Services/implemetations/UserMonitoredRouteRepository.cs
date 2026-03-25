@@ -2,7 +2,6 @@ using Flight_Alert_API.Database;
 using Flight_Alert_API.Models;
 using Flight_Alert_API.Repositories.Interfaces;
 
-using Hangfire.Logging;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -71,6 +70,24 @@ public class UserMonitoredRouteRepository(
         catch(Exception ex)
         {
             _logger.LogError(ex, "An error occurred while deleting UserMonitoredRoute: {@data}", userMonitoredRoute);
+            throw;
+        }
+    }
+
+    public async Task<UserMonitoredRoute?> GetByIdAsync(int id)
+    {
+        try
+        {
+            return await _context.UserMonitoredRoutes
+                .Include(umr => umr.MonitoredRoute)
+                .ThenInclude(mr => mr.OriginAirport)
+                .Include(umr => umr.MonitoredRoute)
+                .ThenInclude(mr => mr.DestinationAirport)
+                .FirstOrDefaultAsync(umr => umr.UserMonitoredRouteId == id);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving UserMonitoredRoute by Id: {Id}", id);
             throw;
         }
     }
