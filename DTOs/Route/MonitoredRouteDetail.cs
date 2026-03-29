@@ -10,4 +10,5 @@ public class MonitoredRouteDetail
     public decimal CurrentPrice { get; set; }
     public decimal? TargetPrice { get; set; }
     public string? Link { get; set; }
+    public bool IsActive { get; set; }
 }

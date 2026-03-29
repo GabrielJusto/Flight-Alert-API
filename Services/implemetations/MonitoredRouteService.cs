@@ -92,7 +92,8 @@ public class MonitoredRouteService(
                 DepartureDay = umr.MonitoredRoute.DepartureDay,
                 CurrentPrice = latestNotification?.Price ?? 0,
                 TargetPrice = umr.TargetPrice,
-                Link = redirectUrl
+                Link = redirectUrl,
+                IsActive = umr.IsActive
             };
         }));
 
