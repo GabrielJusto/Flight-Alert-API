@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 using Flight_Alert_API.Configuration;
 using Flight_Alert_API.DTOs;
@@ -76,7 +77,7 @@ public class AuthService(
         }
 
         string token = CreateToken(user.Id);
-        return new AuthResponse(user.Id, token);
+        return new AuthResponse(user.Id, user.Name, user.LastName, user.Email ?? string.Empty, token);
     }
 
 
@@ -102,7 +103,7 @@ public class AuthService(
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public AuthResponse? RenewToken(string token)
+    public async Task<AuthResponse?> RenewTokenAsync(string token)
     {
         try
         {
@@ -131,11 +132,13 @@ public class AuthService(
             }
 
             string newToken = CreateToken(userId);
-            return new AuthResponse(userId, newToken);
+
+            User user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new EntityNotFoundException("User not found");
+            return new AuthResponse(userId, user.Name, user.LastName, user.Email ?? string.Empty, newToken);
         }
         catch
         {
-            return null;
+            throw;
         }
     }
 }

@@ -54,18 +54,22 @@ public class AuthController(
     }
 
     [HttpPost("refresh-token")]
-    public IActionResult RefreshToken([FromHeader(Name = "Authorization")] string authorization)
+    public async Task<IActionResult> RefreshToken([FromHeader(Name = "Authorization")] string authorization)
     {
         try
         {
             string token = authorization?.Replace("Bearer ", "") ?? string.Empty;
-            AuthResponse? response = _authService.RenewToken(token);
+            AuthResponse? response = await _authService.RenewTokenAsync(token);
             if(response == null)
             {
                 return Unauthorized();
             }
 
             return Ok(response);
+        }
+        catch(EntityNotFoundException)
+        {
+            return NotFound(new { error = "User not found." });
         }
         catch(Exception)
         {

@@ -7,5 +7,5 @@ public interface IAuthService
 {
     public Task<UserRegisterResponseDto> RegisterUser(UserRegisterRequestDto data);
     public Task<AuthResponse?> LoginAsync(AuthenticationDto authDto);
-    public AuthResponse? RenewToken(string token);
+    public Task<AuthResponse?> RenewTokenAsync(string token);
 }
