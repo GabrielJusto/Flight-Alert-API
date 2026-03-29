@@ -11,4 +11,5 @@ public interface IUserMonitoredRouteRepository
     public Task<UserMonitoredRoute?> GetToDeleteAsync(int id, int userId);
     public Task Delete(UserMonitoredRoute userMonitoredRoute);
     public Task<UserMonitoredRoute?> GetByIdAsync(int id);
+    public Task UpdateAsync(UserMonitoredRoute userMonitoredRoute);
 }

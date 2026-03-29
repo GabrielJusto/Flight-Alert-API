@@ -59,13 +59,17 @@ public class FlightPriceService(
     }
     private async Task ProcessMonitoredRouteAsync(MonitoredRoute route)
     {
-        await ProcessFlightNotificationAsync(
-            route.OriginAirport.IataCode,
-            route.DestinationAirport.IataCode,
-            route.DepartureDay.ToString("yyyy-MM-dd"),
-            route.Id,
-            route.UserMonitoredRoutes
-        );
+        List<UserMonitoredRoute> activeUserMonitoredRoutes = route.UserMonitoredRoutes.Where(umr => umr.IsActive).ToList();
+        if(activeUserMonitoredRoutes.Count > 0)
+        {
+            await ProcessFlightNotificationAsync(
+                route.OriginAirport.IataCode,
+                route.DestinationAirport.IataCode,
+                route.DepartureDay.ToString("yyyy-MM-dd"),
+                route.Id,
+                activeUserMonitoredRoutes
+            );
+        }
     }
 
     private async Task ProcessUserMonitoredRouteAsync(UserMonitoredRoute userMonitoredRoute)

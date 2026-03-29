@@ -39,7 +39,8 @@ public class MonitoredRouteService(
         {
             UserId = request.UserId,
             MonitoredRouteId = monitoredRoute.Id,
-            TargetPrice = request.TargetPrice
+            TargetPrice = request.TargetPrice,
+            IsActive = true
         };
 
         await _userMonitoredRouteRepository.Insert(userMonitoredRoute);

@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<PhoneNumberAlreadyExistsValidation>();
         services.AddScoped<IAirportService, AirportService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IUserMonitoredRouteService, UserMonitoredRouteService>();
         return services;
     }
 }

@@ -92,4 +92,18 @@ public class UserMonitoredRouteRepository(
         }
     }
 
+    public async Task UpdateAsync(UserMonitoredRoute userMonitoredRoute)
+    {
+        try
+        {
+            _context.UserMonitoredRoutes.Update(userMonitoredRoute);
+            await _context.SaveChangesAsync();
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating UserMonitoredRoute: {@data}", userMonitoredRoute);
+            throw;
+        }
+    }
+
 }

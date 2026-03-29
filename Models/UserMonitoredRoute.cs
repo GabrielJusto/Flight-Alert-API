@@ -7,6 +7,7 @@ public class UserMonitoredRoute
     public int UserId { get; set; }
     public int MonitoredRouteId { get; set; }
     public decimal TargetPrice { get; set; }
+    public bool IsActive { get; set; }
 
     public virtual User User { get; set; } = null!;
     public virtual MonitoredRoute MonitoredRoute { get; set; } = null!;
