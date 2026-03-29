@@ -9,4 +9,5 @@ public class MonitoredRouteDetail
     public DateOnly DepartureDay { get; set; }
     public decimal CurrentPrice { get; set; }
     public decimal? TargetPrice { get; set; }
+    public string? Link { get; set; }
 }

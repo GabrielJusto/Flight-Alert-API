@@ -13,7 +13,8 @@ public class MonitoredRouteService(
     IAirportRepository airportRepository,
     IMonitoredRouteRepository monitoredRouteRepository,
     IUserMonitoredRouteRepository userMonitoredRouteRepository,
-    IFlightPriceService flightPriceService
+    IFlightPriceService flightPriceService,
+    IGoogleLinkService googleLinkService
 ) : IMonitoredRouteService
 {
 
@@ -21,6 +22,7 @@ public class MonitoredRouteService(
     private readonly IMonitoredRouteRepository _monitoredRouteRepository = monitoredRouteRepository;
     private readonly IUserMonitoredRouteRepository _userMonitoredRouteRepository = userMonitoredRouteRepository;
     private readonly IFlightPriceService _flightPriceService = flightPriceService;
+    private readonly IGoogleLinkService _googleLinkService = googleLinkService;
     public async Task InsertMonitoredRouteAsync(RouteRegisterRequest request)
     {
         Airport? originAirport = await _airportRepository.GetByIATACodeAsync(request.OriginIataCode);
@@ -74,16 +76,26 @@ public class MonitoredRouteService(
     {
         List<UserMonitoredRoute> userMonitoredRoutes = await _userMonitoredRouteRepository.GetAllByUserIdAsync(userId);
 
-        return userMonitoredRoutes.Select(umr => new MonitoredRouteDetail
+        MonitoredRouteDetail[] details = await Task.WhenAll(userMonitoredRoutes.Select(async umr =>
         {
-            RouteId = umr.MonitoredRoute.Id,
-            UserId = umr.UserId,
-            OriginIataCode = umr.MonitoredRoute.OriginAirport.IataCode,
-            DestinationIataCode = umr.MonitoredRoute.DestinationAirport.IataCode,
-            DepartureDay = umr.MonitoredRoute.DepartureDay,
-            CurrentPrice = umr.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault()?.Price ?? 0,
-            TargetPrice = umr.TargetPrice
-        }).ToList();
+            FlightNotification? latestNotification = umr.FlightNotifications.OrderByDescending(fn => fn.NotificationDate).FirstOrDefault();
+            string? linkUrl = latestNotification?.Link;
+            string redirectUrl = linkUrl != null ? await _googleLinkService.GetRedirectUrlAsync(linkUrl) : string.Empty;
+
+            return new MonitoredRouteDetail
+            {
+                RouteId = umr.MonitoredRoute.Id,
+                UserId = umr.UserId,
+                OriginIataCode = umr.MonitoredRoute.OriginAirport.IataCode,
+                DestinationIataCode = umr.MonitoredRoute.DestinationAirport.IataCode,
+                DepartureDay = umr.MonitoredRoute.DepartureDay,
+                CurrentPrice = latestNotification?.Price ?? 0,
+                TargetPrice = umr.TargetPrice,
+                Link = redirectUrl
+            };
+        }));
+
+        return details.ToList();
     }
 
 
