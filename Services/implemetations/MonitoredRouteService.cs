@@ -86,6 +86,7 @@ public class MonitoredRouteService(
             return new MonitoredRouteDetail
             {
                 RouteId = umr.MonitoredRoute.Id,
+                UserMonitoredRouteId = umr.UserMonitoredRouteId,
                 UserId = umr.UserId,
                 OriginIataCode = umr.MonitoredRoute.OriginAirport.IataCode,
                 DestinationIataCode = umr.MonitoredRoute.DestinationAirport.IataCode,
